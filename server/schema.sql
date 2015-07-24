@@ -10,12 +10,12 @@ CREATE TABLE users (
 
 CREATE TABLE messages (
   messageid mediumint(8) AUTO_INCREMENT,
-    userid mediumint(8),
-    message varchar(255),
-    roomname varchar(255),
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (messageid),
-    FOREIGN KEY (userid) REFERENCES users(userid)
+  userid mediumint(8),
+  message varchar(255),
+  roomname varchar(255),
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (messageid),
+  FOREIGN KEY (userid) REFERENCES users(userid)
 );
 
 /* Create other tables and define schemas for them here! */
