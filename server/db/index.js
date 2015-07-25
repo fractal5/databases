@@ -22,22 +22,6 @@ connection.connect(function(err) {
 });
 
 // TODO: return statement isn't being returned b/c inside connection.query.
-var getUserIdFromName = function(username, callback) {
-  connection.query(
-    "SELECT userid from users WHERE username ='" + username + "';",
-    function(err, rows, fields) {
-      if (err) {
-        throw err;
-      } else {
-        if (rows.length === 0) {
-          console.log('db index line 32');
-        } 
-        // console.log('getUserID;')
-        rows[0].userid;
-      }
-    }
-  );
-};
 
 module.exports.getUserIdFromNameBB = function(username) {
   return new Promise(function (resolve, reject) {
@@ -50,39 +34,55 @@ module.exports.getUserIdFromNameBB = function(username) {
           // TODO? handle case where userid not found?
           if (rows.length === 0) {
             console.log('db index line 32: userid not found');
-          } 
-          resolve(rows[0].userid);
+          } else {
+            console.log('getUserId: ', rows);
+            resolve(rows[0].userid);
+          }
         }
       }
     );
   });
-}
-
-
-
-module.exports.addMessage = function(username, message, roomname){
-  // console.log('line 41', getUserIdFromName(username));
-  // console.log('userid', userId);
-
-  connection.query(
-    "INSERT into messages (userid, message, roomname) values (" + getUserIdFromName(username) + ",'" + message + "','" + roomname + "');",
-    function(err, rows, fields) {
-      if (err) {
-        throw err;
-      } else {
-        console.log('inserted user into db');
-      }
-    }
-  );
 };
 
 module.exports.addMessageBB = function(userid, message, roomname) {
   return new Promise(function(resolve, reject){
     connection.query(
-      "INSERT into messages (userid, message, roomname) values (" + userid + ",'" + message + "','" + roomname + "');",
+      'INSERT into messages (userid, message, roomname) values (' + userid + ',"' + message + '","' + roomname + '");',
       function(err, rows, fields) {
         if (err) {
+          console.log('addMessage err ', err);
           reject(err);   
+        } else {
+          console.log('addMessage succeeded', rows);
+          resolve(rows, fields);
+        }
+      }
+    );
+  });
+};
+
+module.exports.getMessagesBB = function(options){
+  return new Promise(function(resolve, reject) {
+    connection.query(
+      'SELECT * from messages',
+      function(err, rows, fields) {
+        if (err) {
+          reject(err)
+        } else
+          resolve(rows, fields);
+      }
+    );
+  });
+};
+
+
+module.exports.addUserBB = function(username){
+  return new Promise(function( resolve, reject ){
+    connection.query(
+      "INSERT into users (username) values ('" + username +"');",
+      function(err, rows, fields) {
+        if (err) {
+          reject(err);
         } else {
           resolve(rows, fields);
         }
@@ -91,19 +91,6 @@ module.exports.addMessageBB = function(userid, message, roomname) {
   });
 };
 
-module.exports.getMessages = function(options){};
-module.exports.addUser = function(username){
-  connection.query(
-    "INSERT into users (username) values ('" + username +"');",
-    function(err, rows, fields) {
-      if (err) {
-        throw err;
-      } else {
-        console.log('inserted user into db');
-      }
-    }
-  );
-};
 module.exports.getUsers = function(options){};
 
 
