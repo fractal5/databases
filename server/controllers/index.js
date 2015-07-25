@@ -11,11 +11,13 @@ module.exports = {
       db.getMessagesBB()
       .then(function(messages){
         console.log(messages.length);
-        var sendData = [];
-        for (var i = 0; i < messages.length; i++) {
-          messages[i])
-        }
-        utils.sendResponse(res, , 200);
+        console.log(messages[0].getUsers().then(function(users) {console.log(users);}));
+        // var sendData = [];
+        // for (var i = 0; i < messages.length; i++) {
+        //   // TODO
+
+        // }
+        utils.sendResponse(res,'' , 200);
       })
       .catch(function(error) {
         console.log('error getting messages', error);

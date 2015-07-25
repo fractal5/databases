@@ -13,24 +13,20 @@ var sequelize = new Sequelize("chat", "root", "", {
  // Forcing primary key to value besides 'id' breaks join.
 var User = sequelize.define(
   'users', 
-  { userid: { 
-      type: Sequelize.INTEGER, 
-      primaryKey: true 
-    },
-  username: Sequelize.STRING,
-  },
+  {username: Sequelize.STRING,},
   {timestamps: false}
 );
 
 var Message = sequelize.define('messages', {
-  userid: Sequelize.INTEGER,
-  messageid: { type: Sequelize.INTEGER, primaryKey: true},
-  message: Sequelize.STRING,
-  roomname: Sequelize.STRING,
-  date: Sequelize.DATE},
-  {timestamps: false}
+    message: Sequelize.STRING,
+    roomname: Sequelize.STRING,
+  }
 );
 
+Message.belongsTo(User);
+
+User.sync();
+Message.sync();
 
 
 module.exports.addUserBB = function(username){
