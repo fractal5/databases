@@ -9,36 +9,27 @@ module.exports = {
   messages: {
     get: function (req, res) {
       db.getMessagesBB()
-      .then(function(messages){
-        console.log(messages.length);
-        var sendData = [];
-        for (var i = 0; i < messages.length; i++) {
-          messages[i])
-        }
-        utils.sendResponse(res, , 200);
+      .then(function(rows, fields){
+        console.log(rows);
+        utils.sendResponse(res, rows, 200);
       })
       .catch(function(error) {
-        console.log('error getting messages', error);
         utils.send404(res);
       });
     }, // a function which handles a get request for all messages
     post: function (req, res) { 
       console.log("message post req body: ", req.body);
       db.getUserIdFromNameBB(req.body.username)
-      .then(function(users) {
-        if (users.length === 0) {
-          utils.send404(res); // XXX : probably not quite the right code
-        } else {
-          db.addMessageBB(users[0].userid, req.body.message, req.body.roomname)
-          .then(function(data){
-            utils.sendResponse(res, data, 201);
-          })
-          .catch(function(error) {
-            console.log('getuserid catch', error);
-            utils.send404(res);
-          });
-        }
+      .then(function(userId) {
         console.log('message type',req.body.message, typeof req.body.message);
+        db.addMessageBB(userId, req.body.message, req.body.roomname);
+      })
+      .then(function(rows, fields) {
+        // The solution code for the server returns '{objectId: objectId}'
+        // where objectId == message ID in the data to send back
+        // What if anything do we want to send back here?
+        // 201 = Created
+        utils.sendResponse(res, rows, 201);
       })
       .catch(function(err) {
         console.log('error posting message', err);
@@ -53,16 +44,17 @@ module.exports = {
     post: function (req, res) {
       var path = urlParse(req.url);
       var username = req.body.username;
-      console.log('post req for : ', username);
       db.addUserBB(username)
-      .then(function(users){
-        console.log('addUserBB: ', users);
-        utils.sendResponse(res, users, 201);
+      .then(function(rows, fields) {
+        // send userid in the response?
+        // 201 = Created
+        utils.sendResponse(res, rows, 201);
       })
-      .error (function (err) {
-        console.log('addUserBB err', err);
-        utils.send404(res);
-      });  
+      .catch(function(err){
+        console.log( ':|', err);
+        utils.send404(res); // XXX : probably not quite the right code
+      });
+        
     }
   }
 };

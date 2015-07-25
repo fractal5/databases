@@ -12,6 +12,10 @@ exports.sendResponse = function(response, data, statusCode){
   response.end(JSON.stringify(data));
 };
 
+exports.send404 = function(response) {
+  exports.sendResponse(response, 'Not Found', 404);
+};
+
 exports.collectData = function(request, callback){
   var data = "";
   request.on('data', function(chunk){
